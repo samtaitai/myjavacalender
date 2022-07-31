@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class AddNumbers {
 
-	static int number1;
+	static int number1; //capitalize?
 	static int number2;
 	
 	public static void insertNumber() {
