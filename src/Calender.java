@@ -10,7 +10,13 @@ public class Calender {
 		//FindDays.FindMonthlyDays();
 		
 		PrintCalender pc = new PrintCalender(); //public method not static
-		pc.printChoiceCal(2000, "Feb");
+		pc.getDayCode(1970, 1, 1);
+		pc.printChoiceCal(1970, 1);
+		pc.printChoiceCal(2022, 8);
+		//pc.getDayCode("2008", 4);
+		
+		
+		
 			
 		
 	}

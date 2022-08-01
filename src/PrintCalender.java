@@ -1,13 +1,7 @@
-import java.util.Scanner;
 
 public class PrintCalender {
 	
-	public int getMaxDaysinLeapYear() {
-		
-		System.out.println("Input your choice of month: ");
-		Scanner scanner = new Scanner(System.in);
-		int month = scanner.nextInt();
-		scanner.close();
+	public int getMaxDaysinLeapYear(int month) {
 		
 		switch(month) {
 		case 2:
@@ -25,12 +19,7 @@ public class PrintCalender {
 		}
 	}
 	
-	public int getMaxDays() {
-		
-		System.out.println("Input your choice of month: ");
-		Scanner scanner = new Scanner(System.in);
-		int month = scanner.nextInt();
-		scanner.close();
+	public int getMaxDays(int month) {
 		
 		switch(month) {
 		case 2:
@@ -48,29 +37,99 @@ public class PrintCalender {
 		}
 	}
 	
-	public void printChoiceCal(int year, String month) {
+	public int getDayCode(int year, int month, int day) {
 		
-		PrintCalender pc = new PrintCalender();
-		int endPoint; 
+		int zeroYear = 1970;
+		int ZEROWEEKDAY;
 		
-		if(year % 4 == 0) {
-			endPoint = pc.getMaxDaysinLeapYear();
+		if(year == zeroYear) { //in case of it passes for loops 
+			ZEROWEEKDAY = 2;
 		}else {
-			endPoint = pc.getMaxDays();
+			ZEROWEEKDAY = 3;
 		}
 		
+		int count = 0;
+		int delta;
+		int dayCode;
+		
+		PrintCalender pc = new PrintCalender();
+		
+		//year calculation
+		for(int i=zeroYear; i<year; i++) {
+			
+			if(i % 4 == 0 && i % 100 != 0 || i % 4 == 0 && i % 100 == 0 && i % 400 == 0) {
+				delta = 366;
+			}else {
+				delta = 365;
+			}
+			
+			count += delta;
+		}
+		
+		//System.out.println(count);
+		
+		//day calculation
+		for(int i=1; i<month; i++) {
+			
+			if(i % 4 == 0 && i % 100 != 0 || i % 4 == 0 && i % 100 == 0 && i % 400 == 0) {
+				delta = pc.getMaxDaysinLeapYear(month);
+			}else {
+				delta = pc.getMaxDays(month);
+			}
+			
+			count += delta;
+		}
+		
+		count += day; 
+		dayCode = (count + ZEROWEEKDAY) % 7;
+		
+		System.out.println(dayCode);
+		
+		return dayCode;
+		
+	}
+	
+	public void printChoiceCal(int year, int month) {
+		
+		PrintCalender pc = new PrintCalender();
+		
+		int endPoint; 
+		int startPoint;
+		
+		if(year % 4 == 0 && year % 100 != 0 || year % 4 == 0 && year % 100 == 0 && year % 400 == 0) {
+			endPoint = pc.getMaxDaysinLeapYear(month);
+		}else {
+			endPoint = pc.getMaxDays(month);
+		}
+		
+		startPoint = pc.getDayCode(year, month, 1); //5
+		//System.out.println(startPoint); 
 		
 		System.out.println("  " + year + " " + month);
 		System.out.println("  SU MO TU WE TH FR SA");
 		System.out.println("  --------------------");
 		
-		for(int i=1; i<endPoint+1; i++) {
+		//begin with blanks (still in the first line)
+		for(int k=0; k<7-startPoint; k++) { //k<2
+			System.out.print("   ");
+		}
+		
+		//the first line
+		for(int j=1; j<startPoint+1; j++) { //j<4
+			System.out.printf("%3d", j);
+		}
+		System.out.println();
+		
+		//the second line
+		for(int i=1+startPoint; i<endPoint+1; i++) { //i=2+3, i starts as 5
+			
 			System.out.printf("%3d", i);
-			if(i%7 == 0) {
+			if(i % 7 == startPoint) { 
 				System.out.println();
 			}
 		}
 		System.out.println();
+
 		
 	}
 	
