@@ -95,8 +95,6 @@ public class PrintCalender {
 	
 	public void printChoiceCal(int year, int month) {
 		
-		//PrintCalender pc = new PrintCalender();
-		
 		int endPoint; 
 		int startPoint;
 		
