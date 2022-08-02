@@ -7,7 +7,6 @@
  */
 
 import java.util.Scanner;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -15,12 +14,14 @@ import java.util.HashMap;
 public class CommandCalendar {
 	
 	private Scanner scanner;
-	private HashMap<Date, String> storedEvents; //first create 'field'
+	private HashMap<Date, EventItem> storedEvents; //first create 'field'
+	private EventItem newEvent;
 	
 	//second create 'constructor'
 	public CommandCalendar() {
 		scanner = new Scanner(System.in);
-		storedEvents = new HashMap<Date, String>();
+		storedEvents = new HashMap<Date, EventItem>();
+		newEvent = new EventItem();
 		
 	}
 
@@ -35,39 +36,36 @@ public class CommandCalendar {
 	}
 	
 	/**
-	 * 
+	 * get user input
+	 * save a new event item into the hash map
 	 * @param scanner
 	 * @throws Exception
 	 */
 	public void cmdRegister(Scanner scanner) throws Exception {
 		
 		System.out.println("Input date(yyyy-mm-dd): ");
-		String date = scanner.next();
-		System.out.println("Input event title: ");
-		String eventTitle = scanner.next();
+		newEvent.eventDate = newEvent.convertStrToDate(scanner.next());
+		System.out.println("Input event title: (a word)");
+		newEvent.eventTitle = scanner.next();
 		
-		storeEvent(date, eventTitle);
+		System.out.println("Input event detail: (submit with space+semicolon)");
+		String text = "";
+		String word;
+		while(!(word = scanner.next()).endsWith(";")) {
+			text+=word + " ";
+		}
 		
-	}
-	
-	/**
-	 * save events in the hashmap
-	 * @param date
-	 * @param eventTitle
-	 * @throws ParseException
-	 */
-	public void storeEvent(String date, String eventTitle) throws ParseException {
+		newEvent.eventDetail = text; 
+		System.out.println("Your event is saved.");
 		
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd"); //input should be dd-MM-yyyy format
-		Date dateObj = dateFormat.parse(date); //convert string date to date type date
-		//System.out.println(dateObj);
-		
-		storedEvents.put(dateObj, eventTitle);
+		storedEvents.put(newEvent.eventDate, newEvent);
 		
 	}
 	
 	/**
-	 * 
+	 * get user input(String date)
+	 * convert user input into Date date
+	 * find the event item with the key(Date date)
 	 * @param scanner
 	 * @throws Exception
 	 */
@@ -76,22 +74,13 @@ public class CommandCalendar {
 		System.out.println("Input date(yyyy-mm-dd): ");
 		String date = scanner.next();
 		
-		findEvent(date);
-		
-	}
-	
-	/**
-	 * access the hashmap
-	 * @param date
-	 * @throws ParseException
-	 */
-	public void findEvent(String date) throws ParseException {
-		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd"); 
 		Date dateObj = dateFormat.parse(date); 
 		
-		String myEvent = storedEvents.get(dateObj);
-		System.out.println(myEvent);
+		EventItem myEvent = storedEvents.get(dateObj);
+		System.out.println(myEvent.eventDate);
+		System.out.println(myEvent.eventTitle);
+		System.out.println(myEvent.eventDetail);
 		
 	}
 	
