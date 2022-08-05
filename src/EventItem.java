@@ -1,6 +1,3 @@
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 /**
  * 
@@ -9,24 +6,14 @@ import java.text.SimpleDateFormat;
  */
 public class EventItem {
 
-	public Date eventDate;
+	public String eventDate;
 	public String eventTitle;
 	public String eventDetail;
 	
-	public EventItem() {
-		eventDate = null;
-		eventTitle = "dummy title";
-		eventDetail = "dummy detail";
+	public EventItem(String date, String title, String detail) {
+		eventDate = date;
+		eventTitle = title;
+		eventDetail = detail;
 	}
 	
-	public Date convertStrToDate(String eventDateStr) {
-		
-		try {
-			eventDate = new SimpleDateFormat("yyyy-mm-dd").parse(eventDateStr);
-			
-		} catch (ParseException e) {
-			System.out.println(e.toString());
-		}
-		return eventDate;
-	}
 }

@@ -7,22 +7,25 @@
  */
 
 import java.util.Scanner;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import org.json.simple.parser.ParseException;
 
 public class CommandCalendar {
 	
 	private Scanner scanner;
-	private HashMap<Date, EventItem> storedEvents; //first create 'field'
+	private HashMap<String, EventItem> storedEvents; //first create 'field'
 	private EventItem newEvent;
+	private static final String SAVE_FILE = "calendar.csv"; 
 	
 	//second create 'constructor'
-	public CommandCalendar() {
+	public CommandCalendar() throws IOException, ParseException {
 		scanner = new Scanner(System.in);
-		storedEvents = new HashMap<Date, EventItem>();
-		newEvent = new EventItem();
-		
+		storedEvents = new HashMap<String, EventItem>();
+		newEvent = new EventItem(null, null, null);
 	}
 
 	public void printMenu() {
@@ -43,8 +46,8 @@ public class CommandCalendar {
 	 */
 	public void cmdRegister(Scanner scanner) throws Exception {
 		
-		System.out.println("Input date(yyyy-mm-dd): ");
-		newEvent.eventDate = newEvent.convertStrToDate(scanner.next());
+		System.out.println("Input date(MM-dd-yyyy): ");
+		newEvent.eventDate = scanner.next();
 		System.out.println("Input event title: (a word)");
 		newEvent.eventTitle = scanner.next();
 		
@@ -56,31 +59,102 @@ public class CommandCalendar {
 		}
 		
 		newEvent.eventDetail = text; 
-		System.out.println("Your event is saved.");
 		
-		storedEvents.put(newEvent.eventDate, newEvent);
+		storedEvents.put(newEvent.eventDate, newEvent); //store input to hashmap
+		
+		writeFile();
 		
 	}
 	
 	/**
-	 * get user input(String date)
-	 * convert user input into Date date
-	 * find the event item with the key(Date date)
+	 * unfold hashmap 
+	 * make it string 
+	 * save it 
+	 */
+	public void writeFile() {
+		
+		File saveFile = new File(SAVE_FILE); //create file instance
+		
+		try {
+			FileWriter writer = new FileWriter(saveFile, true);
+			
+			String savedDate = newEvent.eventDate;
+			String savedTitle = newEvent.eventTitle;
+			String savedDetail = newEvent.eventDetail;
+			String savedData = savedDate + "," + savedTitle + "," + savedDetail + "\n";
+			
+			writer.write(savedData); //write string into the file
+			
+			System.out.println("File is saved succesfully.");
+			
+			writer.close();
+			
+		} catch (IOException e) {
+			System.out.println("File write error!");
+			e.printStackTrace();
+		} 	
+		
+	}
+	
+	/**
+	 * create or load the csv file
+	 * read a line by line
+	 * split date/title/detail then save each as a form of EventItem class
+	 * create and return a hashmap
+	 * @return
+	 */
+	public HashMap<String, EventItem> loadFile() {
+		
+		File loadFile = new File(SAVE_FILE);
+		if(!loadFile.exists()) {
+			System.out.println("No file to be loaded.");
+		}
+		
+		EventItem savedEvent = new EventItem(null, null, null);
+		
+		try {
+			
+			Scanner fileScanner = new Scanner(loadFile);
+			while(fileScanner.hasNext()) {
+				
+				String data = fileScanner.next();
+				
+				String[] splittedData = data.split(",", -2);
+				
+				savedEvent.eventDate = splittedData[0]; 
+				savedEvent.eventTitle = splittedData[1];
+				savedEvent.eventDetail = splittedData[2];
+				
+			}
+			
+			fileScanner.close();
+			
+		}catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		HashMap<String, EventItem> loadedEvents = new HashMap<String, EventItem>();
+		loadedEvents.put(savedEvent.eventDate, savedEvent);
+		
+		return loadedEvents;
+		
+	}
+	
+	/**
+	 * get user input
+	 * find the event based on the date by loadFile method
 	 * @param scanner
 	 * @throws Exception
 	 */
 	public void cmdSearch(Scanner scanner) throws Exception {
-		
-		System.out.println("Input date(yyyy-mm-dd): ");
+				
+		System.out.println("Input date(MM-dd-yyyy): ");
 		String date = scanner.next();
 		
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd"); 
-		Date dateObj = dateFormat.parse(date); 
+		EventItem value = loadFile().get(date);  
 		
-		EventItem myEvent = storedEvents.get(dateObj);
-		System.out.println(myEvent.eventDate);
-		System.out.println(myEvent.eventTitle);
-		System.out.println(myEvent.eventDetail);
+		System.out.println("Your event: "+value.eventTitle);
+		System.out.println("Your event detail: "+value.eventDetail);
 		
 	}
 	
